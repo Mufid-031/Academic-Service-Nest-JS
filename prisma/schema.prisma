@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Course {
+  id          Int         @id @default(autoincrement())
+  name        String
+  code        String      @unique
+  semester    String
+  sks         Int
+  major       String
+  faculty     String
+  isActive    Boolean?    @default(true)
+  schedules   Schedule[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Schedule {
+  id            Int       @id @default(autoincrement())
+  day           Day
+  startTime     String
+  endTime       String
+  room          String
+  courseId      Int
+  course        Course    @relation(fields: [courseId], references: [id])
+  teacherId     Int
+  enrolledCount Int       @default(0)
+  capacity      Int       @default(30)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Enrollment {
+  id            Int        @id @default(autoincrement())
+  studentId     Int
+  scheduleId    Int
+  grade         String?
+  isValidated   Boolean    @default(false)
+  validatedAt   DateTime?
+  validatedBy   Int?
+  createdAt     DateTime?  @default(now())
+  updatedAt     DateTime?  @updatedAt
+}
+
+enum Day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+}
+
